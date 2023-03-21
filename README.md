@@ -1,4 +1,4 @@
-#Latest Mifos X Web App for Ameta
+# Latest Mifos X Web App for Ameta
 
 Mifos X Web App is the revamped version of the Mifos X Community App, an effective financial inclusion solution and the default web application built on top of the Mifos X platform for the Mifos User Community.
 
