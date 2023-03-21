@@ -1,4 +1,4 @@
-# Mifos X Web App [![Build Status](https://travis-ci.com/openMF/web-app.svg?branch=master)](https://travis-ci.com/openMF/web-app) [![Gitter](https://badges.gitter.im/openMF/web-app.svg)](https://gitter.im/openMF/web-app?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+#Latest Mifos X Web App for Ameta
 
 Mifos X Web App is the revamped version of the Mifos X Community App, an effective financial inclusion solution and the default web application built on top of the Mifos X platform for the Mifos User Community.
 
