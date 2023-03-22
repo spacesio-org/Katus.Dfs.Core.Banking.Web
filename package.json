@@ -1,9 +1,9 @@
 {
-  "name": "mifosx-web-app",
+  "name": "ameta",
   "version": "0.0.0",
-  "description": "MifosX Web App is the default web application built on top of the Fineract platform for the Mifos user community leveraging the popular Angular framework.",
+  "description": "ameta is the default web application built on top of the Fineract platform for the Mifos user community leveraging the popular Angular framework.",
   "keywords": [
-    "mifos",
+    "ameta",
     "openmf",
     "fineract",
     "angular"
