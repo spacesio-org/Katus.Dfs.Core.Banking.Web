@@ -1,8 +1,9 @@
-@import "assets/font/stylesheet.scss";
+// @import "assets/font/stylesheet";
 
 html,
 body {
   -webkit-font-smoothing: antialiased;
+  font-family: "Euclid Circular A";
 }
 
 html {
@@ -14,7 +15,7 @@ body {
   font-size: 0.875rem;
   color: #414a58;
   line-height: 1.5;
-  font-family: "Euclid Circular A";
+  
 
 }
 
