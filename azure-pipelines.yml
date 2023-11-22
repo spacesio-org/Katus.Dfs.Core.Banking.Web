@@ -25,7 +25,7 @@ variables:
 - name: tag
   value: '$(Build.BuildId)'
 - name: k8sNamespace
-  value: 'platform-svcs'
+  value: 'platform-web'
 - name: vmImageName
   value: 'ubuntu-latest'
   
