@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    cert-manager.io/cluster-issuer: "letsencrypt"
+  name: ameta-banking-core-ingress
+  namespace: platform-web
+spec:
+  ingressClassName: nginx-external
+  rules:
+  - host: banking.dev.katsupay.com # your domain 
+    http:
+      paths:
+      - backend:
+          service:
+            name: ameta-banking-core-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - banking.dev.katsupay.com
+    secretName: lets-encrypt
