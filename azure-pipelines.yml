@@ -98,4 +98,4 @@ stages:
                 $(Pipeline.Workspace)/s/manifests/service.yaml
                 $(Pipeline.Workspace)/s/manifests/deployment.yaml
                 # $(Pipeline.Workspace)/s/manifests/hpa.yaml
-  
+ 
