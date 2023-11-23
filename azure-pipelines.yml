@@ -19,7 +19,7 @@ variables:
 - ${{ if eq(variables['build.SourceBranchName'], 'production') }}:
   - group: production
 - name: dockerfilePath
-  value: '$(Build.SourcesDirectory)'
+  value: '$(Build.SourcesDirectory)/Dockerfile'
 - name: imageRepository
   value: 'ameta-banking-core'
 - name: tag
