@@ -1,51 +1,101 @@
-# Node.js  
-# Build a general Node.js project with npm.  
-# Add steps that analyze code, save build artifacts, deploy, and more:  
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript  
+trigger:
+  - development
+  - production
+  - stage
+  - ci-cd
+
+
+resources:
+  - repo: self
   
-trigger:  
-- development  
-  
-pool:  
-  vmImage: 'ubuntu-latest'  
-  
-steps:  
-- task: NodeTool@0  
-  inputs:  
-    versionSpec: '16.x'  
-  displayName: 'Install Node.js 16.x'  
-- task: Npm@1  
-  displayName: 'Angular CLI'  
-  inputs:  
-    command: custom  
-    verbose: false  
-    customCommand: 'install @angular/cli@13.3.10'  
-- task: Npm@1  
-  displayName: 'npm install'  
-  inputs:  
-    verbose: false  
-  
-- task: Npm@1  
-  displayName: Build  
-  inputs:  
-    command: custom  
-    verbose: false  
-    customCommand: 'run build'  
+variables:
+- group: GITAUTH
+- ${{ if eq(variables['build.SourceBranchName'], 'ci-cd') }}:
+  - group: development
+- ${{ if eq(variables['build.SourceBranchName'], 'development') }}:
+  - group: development
+- ${{ if eq(variables['build.SourceBranchName'], 'stage') }}:
+  - group: stage
+- ${{ if eq(variables['build.SourceBranchName'], 'production') }}:
+  - group: production
+- name: dockerfilePath
+  value: '$(Build.SourcesDirectory)'
+- name: imageRepository
+  value: 'ameta-banking-core'
+- name: tag
+  value: '$(Build.BuildId)'
+- name: k8sNamespace
+  value: 'platform-web'
+- name: vmImageName
+  value: 'ubuntu-latest'
   
 
-- task: CopyPublishBuildArtifacts@1  
-  displayName: 'Copy Publish Artifact: test'  
-  inputs:  
-    CopyRoot: dist  
-    Contents: '**'  
-    ArtifactName: test  
-    ArtifactType: Container  
   
-- task: DownloadPipelineArtifact@2  
-  displayName: 'Download Pipeline Artifact'  
-  inputs:  
-    targetPath: ' $(Build.ArtifactStagingDirectory)/dist/AngularTest'
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
-  inputs:
-   PathtoPublish: '$(build.artifactstagingdirectory)'
+stages: 
+- stage: Build
+  displayName: Build And Push Stage
+  jobs:
+  - job: Build
+    displayName: Build Job
+    pool:
+      vmImage: $(vmImageName)
+  
+    steps:
+      - checkout: self
+        fetchDepth: 0
+      - task: Bash@3
+        displayName: Building Dockerfile
+        inputs:
+          targetType: 'inline'
+          script: |
+              docker build -t ametaacr.azurecr.io/${IMAGEREPOSITORY}:${TAG} -t ametaacr.azurecr.io/${IMAGEREPOSITORY}:latest -f ${DOCKERFILEPATH} .
+          
+      - task: Docker@2
+        displayName: Build and push an image to container registry
+        inputs:
+          command: push
+          repository: $(imageRepository)
+          containerRegistry: $(dockerRegistryServiceConnection)
+          tags: |
+            $(tag)
+            latest
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy job
+    pool: 
+      name: $(Build.SourceBranchName)
+      demands:
+      - Project -equals Ameta
+      - Agent.Name -equals jump-server-ameta-dev
+    environment: $(Build.SourceBranchName) 
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: Bash@3
+            displayName: Change Container Image
+            inputs:
+              targetType: 'inline'
+              script: |
+                  set -e
+                  sed -i -e 's/ACR/'"${containerRegistry}"'/' $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                  sed -i -e 's/IMAGE_REGISTRY/'"$(imageRepository)"'/' $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                  sed -i -e 's/TAG/'"$(tag)"'/' $(Pipeline.Workspace)/s/manifests/deployment.yaml
+            env:
+              containerRegistry: $(containerRegistry)
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              kubernetesServiceConnection: $(kubernetesServiceConnection)
+              action: deploy
+              namespace: $(k8sNamespace)
+              manifests: |
+                $(Pipeline.Workspace)/s/manifests/ingress.yaml
+                $(Pipeline.Workspace)/s/manifests/service.yaml
+                $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                # $(Pipeline.Workspace)/s/manifests/hpa.yaml
+ 
