@@ -5,7 +5,6 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: 10m
     cert-manager.io/cluster-issuer: "letsencrypt"
   name: ameta-banking-core-ingress
-  namespace: platform-web
 spec:
   ingressClassName: nginx-external
   rules:
