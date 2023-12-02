@@ -17,6 +17,15 @@ spec:
           image: ACR/IMAGE_REGISTRY:TAG
           ports:
           - containerPort: 80
+          env:
+            - name: FINERACT_DOMAIN
+              value: "sabi.dev.katsupay.com"
+            - name: FINERACT_BASE_URL
+              value: "/fineract-provider/api/v1"
+            - name: FINERACT_PROXY_URL
+              value: "http://ameta-core-banking-svc"
+            - name: DOLLAR
+              value: "$"
           # resources:
           #   limits:
           #     cpu: "1000m"
