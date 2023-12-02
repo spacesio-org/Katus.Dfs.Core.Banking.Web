@@ -21,5 +21,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - banking.dev.katsupay.com
+    - sabi.dev.katsupay.com
     secretName: lets-encrypt
