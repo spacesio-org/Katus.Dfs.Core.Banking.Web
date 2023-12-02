@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx-external
   rules:
-  - host: banking.dev.katsupay.com # your domain 
+  - host: sabi.dev.katsupay.com # your domain 
     http:
       paths:
       - backend:
