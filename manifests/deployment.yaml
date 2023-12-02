@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ameta-banking-core
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: ameta-banking-core
