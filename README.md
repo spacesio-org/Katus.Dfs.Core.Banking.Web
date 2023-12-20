@@ -68,7 +68,7 @@ To get more help on the Angular CLI use `ng help` or go check out the
 
 ## Setting up a local server
 
-Follow the given instructions for your operating system to setup a local server for the Mifos X platform.
+Follow the given instructions for your operating system to setup a local server for the Ameta Core platform.
 
 [Windows](https://cwiki.apache.org/confluence/display/FINERACT/Fineract-platform+Installation+on+Windows)
 
@@ -93,7 +93,7 @@ docker run -d -p 4200:80 openmf/web-app:latest
 Access the webapp on http://localhost:4200 in your browser.
 
 ### Docker compose
-It is possible to do a 'one-touch' installation of Mifos X Web App using containers (AKA "Docker").
+It is possible to do a 'one-touch' installation of Ameta Core Web App using containers (AKA "Docker").
 Fineract now packs the mifos community-app web UI in it's docker deploy.
 
 As Prerequisites, you must have `docker` and `docker-compose` installed on your machine; see
