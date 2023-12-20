@@ -48,7 +48,9 @@ stages:
         inputs:
           targetType: 'inline'
           script: |
-              docker build -t ametaacr.azurecr.io/${IMAGEREPOSITORY}:${TAG} -t ametaacr.azurecr.io/${IMAGEREPOSITORY}:latest -f ${DOCKERFILEPATH} .
+              docker build -t $(containerRegistry)/${IMAGEREPOSITORY}:${TAG} -t $(containerRegistry)/${IMAGEREPOSITORY}:latest -f ${DOCKERFILEPATH} .
+        env:
+          containerRegistry: $(containerRegistry)
           
       - task: Docker@2
         displayName: Build and push an image to container registry
@@ -87,6 +89,28 @@ stages:
                   sed -i -e 's/TAG/'"$(tag)"'/' $(Pipeline.Workspace)/s/manifests/deployment.yaml
             env:
               containerRegistry: $(containerRegistry)
+          - task: Bash@3
+            displayName: Configuring resource limit and requests
+            inputs:
+              targetType: 'inline'
+              script: |
+                  set -e
+                  if [ "${BUILD_SOURCEBRANCHNAME}" == "development" ]; then
+                    echo "Pulling variables for dev"
+                    yq eval '.spec.rules[0].host = "$(HOSTNAME-DEVELOPMENT)"' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
+                    yq eval '.spec.tls[0].hosts = ["$(HOSTNAME-DEVELOPMENT)"]' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
+                    
+                  elif [ "${BUILD_SOURCEBRANCHNAME}" == "stage" ]; then
+                    echo "Pulling variables for stage"
+                    yq eval '.spec.rules[0].host = "$(HOSTNAME-STAGE)"' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
+                    yq eval '.spec.tls[0].hosts = ["$(HOSTNAME-STAGE)"]' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
+                    
+                  elif [ "${BUILD_SOURCEBRANCHNAME}" == "production" ]; then
+                    echo "Pulling variables for production"
+                    yq eval '.spec.rules[0].host = "$(HOSTNAME-PRODUCTION)"' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
+                    yq eval '.spec.tls[0].hosts = ["$(HOSTNAME-PRODUCTION)"]' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
+
+                  fi
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
