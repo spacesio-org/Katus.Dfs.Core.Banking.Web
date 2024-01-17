@@ -111,6 +111,22 @@ stages:
                     yq eval '.spec.tls[0].hosts = ["$(HOSTNAME-PRODUCTION)"]' -i $(Pipeline.Workspace)/s/manifests/ingress.yaml
 
                   fi
+          - task: Bash@3
+            displayName: Setting Resources
+            inputs:
+              targetType: 'inline'
+              script: |
+                  set -e
+                  /usr/local/bin/yq eval '.spec.replicas = $(REPLICAS)' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                  /usr/local/bin/yq eval '.spec.minReplicas = $(REPLICAS)' -i $(Pipeline.Workspace)/s/manifests/hpa.yaml
+                  /usr/local/bin/yq eval '.spec.maxReplicas = $(MAX_REPLICAS)' -i $(Pipeline.Workspace)/s/manifests/hpa.yaml
+                  if [ "${BUILD_SOURCEBRANCHNAME}" != "development" ]; then
+                    echo "Branch is not dev, configuring requests and limits"
+                    /usr/local/bin/yq eval '.spec.template.spec.containers[0].resources.requests.cpu = "$(CPU_REQUEST)"' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                    /usr/local/bin/yq eval '.spec.template.spec.containers[0].resources.requests.memory = "$(MEMORY_REQUEST)"' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                    /usr/local/bin/yq eval '.spec.template.spec.containers[0].resources.limits.cpu = "$(CPU_LIMIT)"' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                    /usr/local/bin/yq eval '.spec.template.spec.containers[0].resources.limits.memory = "$(MEMORY_LIMIT)"' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
+                  fi
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
@@ -121,5 +137,5 @@ stages:
                 $(Pipeline.Workspace)/s/manifests/ingress.yaml
                 $(Pipeline.Workspace)/s/manifests/service.yaml
                 $(Pipeline.Workspace)/s/manifests/deployment.yaml
-                # $(Pipeline.Workspace)/s/manifests/hpa.yaml
+                $(Pipeline.Workspace)/s/manifests/hpa.yaml
  
