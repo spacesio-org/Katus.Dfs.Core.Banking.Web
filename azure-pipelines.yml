@@ -3,6 +3,7 @@ trigger:
   - production
   - stage
   - ci-cd
+  - new-development
 
 
 resources:
@@ -18,6 +19,8 @@ variables:
   - group: stage
 - ${{ if eq(variables['build.SourceBranchName'], 'production') }}:
   - group: production
+- ${{ if eq(variables['build.SourceBranchName'], 'new-development') }}:
+  - group: new-development 
 - name: dockerfilePath
   value: '$(Build.SourcesDirectory)/Dockerfile'
 - name: imageRepository
@@ -68,7 +71,7 @@ stages:
   - deployment: Deploy
     displayName: Deploy job
     pool: 
-      name: $(Build.SourceBranchName)
+      name: Ameta-Dev
       demands:
       - Project -equals Ameta
       - Agent.Name -equals jump-server-ameta-dev
