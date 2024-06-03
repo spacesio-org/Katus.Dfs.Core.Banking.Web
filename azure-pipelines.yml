@@ -72,9 +72,9 @@ stages:
     displayName: Deploy job
     pool: 
       name: Ameta-Dev
-      demands:
-      - Project -equals Ameta
-      - Agent.Name -equals jump-server-ameta-dev
+      # demands:
+      # - Project -equals Ameta
+      # - Agent.Name -equals jump-server-ameta-dev
     environment: $(Build.SourceBranchName) 
     strategy:
       runOnce:
