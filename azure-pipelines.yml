@@ -123,7 +123,7 @@ stages:
                   /usr/local/bin/yq eval '.spec.replicas = $(REPLICAS)' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
                   /usr/local/bin/yq eval '.spec.minReplicas = $(REPLICAS)' -i $(Pipeline.Workspace)/s/manifests/hpa.yaml
                   /usr/local/bin/yq eval '.spec.maxReplicas = $(MAX_REPLICAS)' -i $(Pipeline.Workspace)/s/manifests/hpa.yaml
-                  if [ "${BUILD_SOURCEBRANCHNAME}" != "development" ]; then
+                  if [ "${BUILD_SOURCEBRANCHNAME}" != "new-development" ]; then
                     echo "Branch is not dev, configuring requests and limits"
                     /usr/local/bin/yq eval '.spec.template.spec.containers[0].resources.requests.cpu = "$(CPU_REQUEST)"' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
                     /usr/local/bin/yq eval '.spec.template.spec.containers[0].resources.requests.memory = "$(MEMORY_REQUEST)"' -i $(Pipeline.Workspace)/s/manifests/deployment.yaml
