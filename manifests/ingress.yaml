@@ -3,12 +3,12 @@ kind: Ingress
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 10m
-    cert-manager.io/cluster-issuer: "letsencrypt"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
   name: ameta-banking-core-ingress
 spec:
   ingressClassName: nginx-external
   rules:
-  - host: sabi.dev2.katsupay.com # your domain 
+  - host: banking.katsupay.com # your domain 
     http:
       paths:
       - backend:
@@ -20,5 +20,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - sabi.dev2.katsupay.com
-    secretName: lets-encrypt
+    - banking.katsupay.com
+    secretName: lets-encrypt-core-bank-web
